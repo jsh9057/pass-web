@@ -2,15 +2,16 @@ package com.jsh.pass.passweb.controller.admin;
 
 import com.jsh.pass.passweb.service.packaze.PackageService;
 import com.jsh.pass.passweb.service.pass.BulkPassService;
+import com.jsh.pass.passweb.service.statistics.StatisticsService;
 import com.jsh.pass.passweb.service.user.UserGroupMappingService;
+import com.jsh.pass.passweb.util.LocalDateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping(value = "/admin")
@@ -21,9 +22,15 @@ public class AdminViewController {
     private PackageService packageService;
     @Autowired
     private UserGroupMappingService userGroupMappingService;
+    @Autowired
+    private StatisticsService statisticsService;
 
     @GetMapping
-    public ModelAndView home(ModelAndView modelAndView) {
+    public ModelAndView home(ModelAndView modelAndView, @RequestParam("to") String toString) {
+        LocalDateTime to = LocalDateTimeUtils.parseDate(toString);
+
+        // chartData 를 조회합니다. (라벨, 출석횟수, 취소 횟수)
+        modelAndView.addObject("chartData", statisticsService.makeChartData(to));
         modelAndView.setViewName("admin/index");
         return modelAndView;
     }
